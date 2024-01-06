@@ -1219,6 +1219,24 @@ def canvas_value_to_axis_value(canvas_v, axis_v, other_canvas_v, other_axis_v,
     return m * queried_canvas_v + b
 
 
+def min_max(elems):
+    i = max(elem[0] for elem in elems)
+    j = min(elem[1] for elem in elems)
+    return i, j
+
+
+def get_min_max_cs(e):
+    if isinstance(e, list):
+        return min_max([get_min_max_cs(i) for i in e])
+    elif e["type"] in {"open_path", "closed_path"}:
+        return min_max(e["cs_lst"])
+    elif e["type"] == "circle":
+        return e["center_cs"]
+    elif e["type"] == "latex":
+        return e["cs"]
+    return 0., 0.
+
+
 def draw_to_tikz(e):
     cmd_lst = []
     if isinstance(e, list):
@@ -1289,7 +1307,7 @@ def write_textfile(filepath, lines):
 
 
 # TODO: have to define colors by hand.
-def draw_to_tikz_standalone(e, filepath, name2color_in_rgb=None):
+def draw_to_tikz_standalone(e, filepath, name2color_in_rgb=None, bbox=None):
     tikz_lines = []
     tikz_lines.extend([
         '\\documentclass{standalone}',
@@ -1300,6 +1318,13 @@ def draw_to_tikz_standalone(e, filepath, name2color_in_rgb=None):
         '\\begin{document}',
         '\\begin{tikzpicture}',
     ])
+    if bbox is not None:
+        x, y = get_min_max_cs(e)
+        x = x + bbox[1][0]
+        y = y + bbox[1][1]
+        tikz_lines.extend([
+            '\\useasboundingbox (%f,%f) rectangle (%f,%f);' % (bbox[0] + (x, y))
+        ])
 
     # define the colors used.
     if name2color_in_rgb is not None:
