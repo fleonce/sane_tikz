@@ -1307,12 +1307,14 @@ def write_textfile(filepath, lines):
 
 
 # TODO: have to define colors by hand.
-def draw_to_tikz_standalone(e, filepath, name2color_in_rgb=None, bbox=None):
+def draw_to_tikz_standalone(e, filepath, name2color_in_rgb=None, bbox=None, packages=None):
+    packages = packages or list()
     tikz_lines = []
     tikz_lines.extend([
         '\\documentclass{standalone}',
         "\\usepackage[T1]{fontenc}"
         '\\usepackage{tikz}',
+        *packages,
         '\\usepackage{amsmath, amsfonts}',
         '\\usetikzlibrary{arrows.meta}',
         '\\begin{document}',
