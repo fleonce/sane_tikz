@@ -48,7 +48,7 @@ def fill_opacity(alpha):
 
 
 def line_opacity(alpha):
-    return "line opacity=%f" % alpha
+    return "draw opacity=%f" % alpha
 
 
 def line_and_fill_opacities(line_alpha, fill_alpha):
